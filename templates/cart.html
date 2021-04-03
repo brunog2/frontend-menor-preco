@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='dist/css/cart.css' />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="dist/js/cart.js?u={{ last_updated }}"></script>
+
+    <title>Lista de Compras - Menor Preço</title>
+</head>
+<body>
+    <div class="main-container">
+        
+        <div class="top-container">
+            <div class="cart-container" href="/cart">
+                <a class="material-icons">&#xe8cc</a>
+            </div>
+        </div>
+
+        <div class="bottom-container">
+            <div>
+                <p class="cards-title"><p id="len">{{products|length}}</p>produtos adicionados ao carrinho</p>
+            </div>  
+
+            <form id="searchMarket" action="/searchMarket" method="POST" ></form>
+            
+            <div class="cards-container">
+                {% for product in products %}
+                <div class="card" id="{{product.dscProduto + product.codGetin}}">
+                    <div class="title-container">
+                        <p class="product-title" >{{product.dscProduto}}</p>
+                        <form action="/deleteProduct" method="POST" >
+                            <input type="hidden" name="codCard" value="{{product.codGetin}}">
+                            <input type="submit" value="&#xe92e" class="material-icons icon delete-button" onclick="deleteItem('{{product.dscProduto + product.codGetin}}', '{{product.codGetin}}')"></input>
+                        </form>                        
+                    </div>
+                    
+                    <div class="quantityContainer">
+                        <form action="/subQtProduct" method="POST" >
+                            <input type="hidden" name="codGetin" value="{{product.codGetin}}">
+                            <input type="submit" name="sub" type="button" value="&#xe15b" class="material-icons icon quantity-button"></input>
+                        </form>
+
+                        <input type="hidden" name="qtd" id="{{product.codGetin}}" value="{{product.qtd}}">
+                        
+                        <p name="{{product.codGetin}}">{{product.qtd}}</p>
+                        
+                        <form  action="/addQtProduct" method="POST" >
+                            <input type="hidden" name="codGetin" value="{{product.codGetin}}">
+                            <input type="submit" name="sum" type="button" value="&#xe145" class="material-icons icon quantity-button" ></input>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="submit" form="searchMarket" class="submit-products-button" value="Procurar melhor mercado"></a>
+                
+    </div>    
+</body>
+</html>

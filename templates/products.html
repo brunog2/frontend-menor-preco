@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='dist/css/products.css' />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="dist/js/products.js"></script>
+
+    <title>Lista de Compras - Menor Preço</title>
+</head>
+<body>
+    <div class="main-container">
+        
+        <div class="top-container">
+            <div class="cart-container" href="/cart">
+                <a class="material-icons">&#xe8cc</a>
+            </div>
+        </div>        
+
+        <div class="search-container">            
+            <p for="search-input" class="input-label">Informe o nome do produto</p>
+                <form action="/products" method="GET" class="input-container">
+                    <input type="text" name="q" class="search-input" placeholder="Ex.: arroz parbolizado">
+
+                    <input type="submit" class="search-button" value="Pesquisar"></input>
+                </form>         
+                
+            <p class="post-text">Especifique o produto ao máximo para obter resultados mais relevantes</p>
+            
+        </div>
+        
+
+        <div class="bottom-container">
+            <div>
+                <p class="cards-title">Aproximadamente {{cartLength}} resultados para "{{searchText}}"</p>
+                <p style="font-size: 13px;">Escolha o máximo de produtos relevantes para melhorar a pesquisa de preços</p>
+            </div>            
+            
+                
+                    <div class="cards-container">
+                        {% for product in products %}
+                        <form action="/addToCart" method="POST" class="form-products">
+                        <div class="card">
+                            <div class="title-container">
+                                <p class="product-title" >{{product.dscProduto}}</p>
+                                <input type="text" name="dscProduto" value="{{product.dscProduto}}" hidden>
+                                <input type="text" name="codGetin" value="{{product.codGetin}}" hidden>
+                            </div>
+                            <input type="submit" class="add-to-cart" id="{{product.codGetin}}" value="Adicionar ao carrinho" onclick="changeButtonText( '{{ product.codGetin }}' )"></input>
+                        </div>
+                    </form>
+                        {% endfor %}
+                    </div>
+                    <a href="/cart" class="submit-products-button">Ir para o carrinho</a>
+                        
+        
+
+
+
+    </div>    
+</body>
+</html>
