@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' href='dist/css/index.css' />
-    
+    <script src='dist/js/index.js'> </script>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <title>Lista de Compras - Menor Preço</title>
@@ -20,12 +21,14 @@
         <div class="search-container">            
             <p for="search-input" class="input-label">Informe o nome do produto</p>
                 <form action="/products" method="GET" class="input-container">
+                    <input type="hidden" id="latitudeUsuario" name="latitudeUsuario" value="null">
+                    <input type="hidden" id="longitudeUsuario" name="longitudeUsuario" value="null">
                     <input type="text" name="q" class="search-input" placeholder="Ex.: arroz parbolizado">
-
                     <input type="submit" class="search-button" value="Pesquisar"></input>
                 </form>         
                 
             <p class="post-text">Especifique ao máximo o produto para obter resultados mais relevantes</p>
+            <p class="post-text">Por favor, permita acesso à localização para procurar os mercados mais perto de você</p>
         </div>
         
     </div>    

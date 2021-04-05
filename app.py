@@ -32,8 +32,13 @@ def dir_last_updated(folder):
                    for root_path, dirs, files in os.walk(folder)
                    for f in files))
 
+productsOnCart = []
+cartLength = 0
+latitudeUsuario = -9.6432331
+longitudeUsuario = -35.7190686
+
 @app.route("/")
-def login():
+def login():  
   return render_template('index.html')
   
   #if not hasattr(current_user, 'id'):
@@ -41,10 +46,76 @@ def login():
   #else:
   #  return render_template("index.html")
 
-productsOnCart = []
-cartLength = 0
-latitudeUsuario = -9.6432331
-longitudeUsuario = -35.7190686
+
+@app.route("/products", methods=['GET', 'POST'])
+def products():
+  global latitudeUsuario
+  global longitudeUsuario
+
+  if request.method == "POST":
+    pass
+
+  else:
+    newProducts = []
+    print("as coordenadas do usuário: ", request.args.get("latitudeUsuario"), request.args.get("longitudeUsuario"))
+    print("as coordenadas do usuário: ", latitudeUsuario, longitudeUsuario)
+    #page = request.args.get('page', 1)
+    
+    productDescription = request.args.get('q')
+    latitudeUsuario = request.args.get("latitudeUsuario")
+    longitudeUsuario = request.args.get("longitudeUsuario")
+    print("descricao do produto: ", productDescription)
+    url = "http://api.sefaz.al.gov.br/sfz_nfce_api/api/public/consultarPrecosPorDescricao"
+    header = {"appToken": "7be9c184660a004d6ec383b11c50e16b02981bd0"}
+    payload = {"descricao": productDescription,"dias": 1,"latitude": latitudeUsuario,"longitude": longitudeUsuario,"raio": 15}
+    response = requests.post(url, headers=header, json=payload)
+
+    products = response.json()
+
+    productsDescriptions = []
+    productsCodes = []
+
+    for product in products:
+      print("o código é: ", product["codGetin"])
+      #if product["dscProduto"].lower() in productsDescriptions and product["codGetin"] not in productsCodes:
+      #  for productVerification in newProducts:
+      #    if productVerification["dscProduto"] == product["dscProduto"]:
+      #      productVerification["codsGetin"].append(product["codGetin"])
+      #      productsCodes.append(product["codGetin"])
+
+      # or product["dscProduto"] in productsDescriptions
+      # erro conhecido: alguns códigos de barras começam por 1 e precisam desse número antes para a consulta na api, 
+
+      if product["codGetin"] == None or product["codGetin"] == "" or product["codGetin"].upper() == "SEM GTIN" or product["codGetin"][-13:] in productsCodes:
+        continue
+
+      else:
+        productsDescriptions.append(product["dscProduto"].lower())
+        print("na posicao 0: ", product["codGetin"][0])
+        newProduct = {}
+        if product["codGetin"][0] == '0':
+          print("entrou no if ", product["codGetin"])
+          productsCodes.append(product["codGetin"][-13:])
+          newProduct = {"dscProduto": product["dscProduto"], "codGetin": product["codGetin"][-13:]}
+        else:
+          print("entrou no else ", product["codGetin"])
+          productsCodes.append(product["codGetin"])
+          newProduct = {"dscProduto": product["dscProduto"], "codGetin": product["codGetin"]}
+        
+        newProducts.append(newProduct)
+
+    #print("codigos do produto: ", productsCodes)
+    #print("nomes do produto: ", productsDescriptions)
+    #print("os novos produtos: ", newProducts)
+    return render_template('products.html', products=newProducts, searchText=productDescription, latitudeUsuario=latitudeUsuario, longitudeUsuario=longitudeUsuario)
+
+  
+
+  
+  #if not hasattr(current_user, 'id'):
+  #  return render_template("login.html")
+  #else:
+  #  return render_template("index.html")
 
 
 @app.route("/addToCart", methods=['POST'])
@@ -120,14 +191,16 @@ def deleteProduct():
 
 
 
-def calculate_distance(latitudeEstabelecimento, longitudeEstabelecimento, latitudeUsuario, LongitudeUsuario):
+def calculate_distance(latitudeEstabelecimento, longitudeEstabelecimento, latitudeUsuario, longitudeUsuario):
     result = 0
     
-    lat1 = latitudeEstabelecimento
-    lng1 = longitudeEstabelecimento
+    lat1 = int(latitudeEstabelecimento)
+    lng1 = int(longitudeEstabelecimento)
 
-    lat2 = latitudeUsuario
-    lng2 = LongitudeUsuario
+    lat2 = int(latitudeUsuario)
+    lng2 = int(longitudeUsuario)
+
+    print("as coordenadas: \n usuario: {}, {} \n estabelecimento: {}, {}".format(lat2, lng2, lat1, lng1))
 
     degreesToRadians = (math.pi / 180)
     latrad1 = lat1 * degreesToRadians
@@ -266,66 +339,6 @@ def searchMarket():
 
 
 
-
-
-
-
-@app.route("/products", methods=['GET', 'POST'])
-def products():
-  global latitudeUsuario
-  global longitudeUsuario
-
-  if request.method == "POST":
-    pass
-
-  else:
-    newProducts = []
-
-    #page = request.args.get('page', 1)
-    
-    productDescription = request.args.get('q')
-    print("descricao do produto: ", productDescription)
-    url = "http://api.sefaz.al.gov.br/sfz_nfce_api/api/public/consultarPrecosPorDescricao"
-    header = {"appToken": "7be9c184660a004d6ec383b11c50e16b02981bd0"}
-    payload = {"descricao": productDescription,"dias": 1,"latitude": latitudeUsuario,"longitude": longitudeUsuario,"raio": 15}
-    response = requests.post(url, headers=header, json=payload)
-
-    products = response.json()
-
-    productsDescriptions = []
-    productsCodes = []
-
-    for product in products:
-      print("o código é: ", product["codGetin"])
-      #if product["dscProduto"].lower() in productsDescriptions and product["codGetin"] not in productsCodes:
-      #  for productVerification in newProducts:
-      #    if productVerification["dscProduto"] == product["dscProduto"]:
-      #      productVerification["codsGetin"].append(product["codGetin"])
-      #      productsCodes.append(product["codGetin"])
-
-      # or product["dscProduto"] in productsDescriptions
-      if product["codGetin"] == None or product["codGetin"] == "" or product["codGetin"].upper() == "SEM GTIN" or product["codGetin"][-13:] in productsCodes:
-        continue
-
-      else:
-        productsDescriptions.append(product["dscProduto"].lower())
-        productsCodes.append(product["codGetin"][-13:])
-
-        newProduct = {"dscProduto": product["dscProduto"], "codGetin": product["codGetin"][-13:]}
-        newProducts.append(newProduct)
-
-    #print("codigos do produto: ", productsCodes)
-    #print("nomes do produto: ", productsDescriptions)
-    #print("os novos produtos: ", newProducts)
-    return render_template('products.html', products=newProducts, searchText=productDescription)
-
-  
-
-  
-  #if not hasattr(current_user, 'id'):
-  #  return render_template("login.html")
-  #else:
-  #  return render_template("index.html")
 
 
 @app.route("/login", methods=['POST'])

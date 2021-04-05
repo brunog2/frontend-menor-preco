@@ -22,6 +22,8 @@
         <div class="search-container">            
             <p for="search-input" class="input-label">Informe o nome do produto</p>
                 <form action="/products" method="GET" class="input-container">
+                    <input type="hidden" id="latitudeUsuario" name="latitudeUsuario" value="{{latitudeUsuario}}">
+                    <input type="hidden" id="longitudeUsuario" name="longitudeUsuario" value="{{longitudeUsuario}}">
                     <input type="text" name="q" class="search-input" placeholder="Ex.: arroz parbolizado">
 
                     <input type="submit" class="search-button" value="Pesquisar"></input>
