@@ -210,7 +210,7 @@ def searchMarket():
     print("os cnpjs que vendem {}: {}".format(codBarras["codBarras"], codBarras["cnpjs"]))
     for cnpj in codBarras["cnpjs"]:
       if sellAllProducts(cnpj):
-        cnpjsTodosProdutos.append({"cnpj": cnpj, "codsBarras": [], "precoTotal": 0})
+        cnpjsTodosProdutos.append({"cnpj": cnpj, "marketName": "", "latitude": 0, "longitude": 0, "codsBarras": [], "precoTotal": 0})
   
 
   #consultar os preços dos produtos em cada cnpj
@@ -223,10 +223,23 @@ def searchMarket():
       payload = {"codigoBarras": cod["codBarras"], "cnpj": cnpj["cnpj"], "quantidadeDeDias": 3}
       response = requests.post(url, headers=header, json=payload)
       dscProduto = response.json()["dscProduto"]
+      marketName = response.json()["nomFantasia"]
+      latitude = response.json()["numLatitude"]
+      longitude = response.json()["numLongitude"]
+      logradouro = response.json()["nomLogradouro"]
+      numImovel = response.json()["numImovel"]
+      print("nome do mercado: ", marketName)
+      if marketName == None:
+        marketName = response.json()["nomRazaoSocial"]
+  
       preco = response.json()["valUnitarioUltimaVenda"]
       cnpj["codsBarras"].append({"cod": cod["codBarras"], "dscProduto": dscProduto, "preco": preco})
       cnpj["precoTotal"] += preco
-
+      cnpj["marketName"] = marketName
+      cnpj["latitude"] = latitude
+      cnpj["longitude"] = longitude
+      cnpj["logradouro"] = logradouro
+      cnpj["numImovel"] = numImovel
       # cnpjTodosProdutos = [{cnpj: [{"cod": cod, "dscProduto": productsOnCart["dscProduto"], "preco": preco}], precoTotal: 15}]
 
   print("passou da parte de verificar cada preco em todos os estabelecimentos")
@@ -240,7 +253,8 @@ def searchMarket():
 
   print("\n \n cnpjsTodosProdutos em ordem de preco crescente: ", cnpjsTodosProdutos)
 
-  return jsonify(cnpjsTodosProdutos)
+  # return jsonify(cnpjsTodosProdutos[:10])
+  return render_template('markets.html', markets=cnpjsTodosProdutos)
 
 
 

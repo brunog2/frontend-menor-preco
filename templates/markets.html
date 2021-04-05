@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='dist/css/cart.css' />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="dist/js/cart.js?u={{ last_updated }}"></script>
+
+    <title>Lista de Compras - Menor Preço</title>
+</head>
+<body>
+    <div class="main-container">
+        
+        <div class="top-container">
+            <div class="cart-container" >
+                <a href="/" class="material-icons">Home</a>
+            </div>
+        </div>
+
+        <div class="bottom-container">
+           
+            <div class="cards-container">
+                {% for market in markets %}
+                <div class="card" id="{{market.numCNPJ}}">
+                    <div class="title-container">
+                        <p class="product-title" >{{market.marketName}}</p>                    
+                    </div>
+                    
+                    <div class="quantityContainer">
+                        
+                        
+                        
+                        <p>Total da lista de compras: {{market.precoTotal}}</p>
+                        
+                        <p>Endereço: {{market.logradouro}}, {{market.numImovel}}</p>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+           
+                
+    </div>    
+</body>
+</html>
